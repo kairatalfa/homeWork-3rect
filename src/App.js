@@ -1,31 +1,47 @@
+import { useEffect, useState } from "react";
+
 import "./App.css";
-import Card from "./components/Card";
-const data = [
-  {
-    title: "Pen",
-    price: 20,
-    color: "blue",
-    date: new Date(2022, 7, 5),
-  },
-  {
-    title: "Paper",
-    price: 20,
-    color: "blue",
-    date: new Date(2020, 3, 14),
-  },
-  {
-    title: "Apple",
-    price: 20,
-    color: "blue",
-    date: new Date(2021, 7, 24),
-  },
-];
+import useFetch from "./helpers/hooks/useFetch";
+
 function App() {
+  const [todo, setTodo] = useState("");
+  const BASE_URL =
+    "https://todohooks-2715c-default-rtdb.asia-southeast1.firebasedatabase.app/todo.json";
+  const { todos, addItem, getFetchTodo, removeItemHandler } = useFetch(
+    [],
+    BASE_URL
+  );
+
+  const addTodoHandler = (e) => {
+    e.preventDefault();
+    addItem({ text: todo });
+    setTodo("");
+  };
+  useEffect(() => {
+    getFetchTodo();
+  }, []);
+
   return (
     <div className="App">
-      {data.map((e) => {
-        return ( <Card title={e.title} price={e.price} color={e.color} data={e.date} />)
-      })}
+      <form onSubmit={addTodoHandler}>
+        <input
+          value={todo}
+          type="text"
+          onChange={(e) => setTodo(e.target.value)}
+        />
+        <button>add todo</button>
+      </form>
+      <div>
+        {todos.map((item) => {
+          return (
+            <li key={item.id}>
+              {item.text}
+              <button onClick={()=> removeItemHandler(item.id)}>delete</button>
+            </li>
+          );
+        })}
+      </div>
+      
     </div>
   );
 }
